@@ -1,0 +1,15 @@
+<component name="libraryTable">
+  <library name="osgi">
+    <CLASSES>
+      <root url="file://$USER_HOME$/OneDrive/Desktop/hibernate-release-4.2.21.Final/hibernate-release-4.2.21.Final/lib/osgi" />
+      <root url="file://$USER_HOME$/OneDrive/Desktop/hibernate-release-4.2.21.Final/hibernate-release-4.2.21.Final/lib/required" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES>
+      <root url="file://$USER_HOME$/OneDrive/Desktop/hibernate-release-4.2.21.Final/hibernate-release-4.2.21.Final/lib/osgi" />
+    </SOURCES>
+    <jarDirectory url="file://$USER_HOME$/OneDrive/Desktop/hibernate-release-4.2.21.Final/hibernate-release-4.2.21.Final/lib/osgi" recursive="false" />
+    <jarDirectory url="file://$USER_HOME$/OneDrive/Desktop/hibernate-release-4.2.21.Final/hibernate-release-4.2.21.Final/lib/required" recursive="false" />
+    <jarDirectory url="file://$USER_HOME$/OneDrive/Desktop/hibernate-release-4.2.21.Final/hibernate-release-4.2.21.Final/lib/osgi" recursive="false" type="SOURCES" />
+  </library>
+</component>
