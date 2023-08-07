@@ -4,7 +4,7 @@ import Core.Manager.BoardManager;
 import UI.Component.CustomLabel;
 import UI.Component.CustomTextField;
 import UI.Component.RoundedButton;
-import UI.Screen.Board.BoardView;
+import UI.Screen.BoardPanel.BoardPanelView;
 
 import javax.swing.*;
 import java.awt.*;
@@ -48,13 +48,13 @@ public class AddBoardView extends JDialog {
 
                 addBoardController.addBoard(boardName);
                 titleField.setText("");
-                BoardView boardView = new BoardView(boardManager);
-                setVisible(false); // Hide the dialog
-                Container parent = getParent();
-                parent.remove(AddBoardView.this); // Remove the current panel (AddMemberView)
-                parent.add(boardView); // Add the member view panel
-                parent.revalidate(); // Revalidate the container to update the UI
-                parent.repaint(); // Repaint the container to refresh the UI
+//                BoardPanelView boardPanelView = new BoardPanelView(boardManager);
+//                setVisible(false); // Hide the dialog
+//                Container parent = getParent();
+//                parent.remove(AddBoardView.this); // Remove the current panel (AddMemberView)
+//                parent.add(boardPanelView); // Add the member view panel
+//                parent.revalidate(); // Revalidate the container to update the UI
+//                parent.repaint(); // Repaint the container to refresh the UI
             }
         });
 

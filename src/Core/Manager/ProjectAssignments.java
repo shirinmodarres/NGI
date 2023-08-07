@@ -1,42 +1,53 @@
 package Core.Manager;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
+import Core.Model.Project;
+import Core.Model.User;
+import Core.ModelDb.ProjectDB;
+import Core.ModelDb.UserDB;
+
+import java.util.*;
 
 public class ProjectAssignments {
 
-        private Map<String, ArrayList<String>> userToProjectsMap;
+    private Map<User, List<Project>> userToProjectsMap;
 
-        public ProjectAssignments() {
-            userToProjectsMap = new HashMap<>();
-        }
+    public ProjectAssignments() {
+        userToProjectsMap = new HashMap<>();
+    }
 
-        public void assignProjectToUser(String userName, String projectName) {
-            userToProjectsMap.computeIfAbsent(userName, k -> new ArrayList<>()).add(projectName);
-        }
+    public void assignProjectToUser(User user, Project project) {
+        userToProjectsMap.computeIfAbsent(user, k -> new ArrayList<>()).add(project);
+    }
 
-        public void unassignProjectFromUser(String userName, String projectName) {
-            ArrayList<String> projects = userToProjectsMap.get(userName);
-            if (projects != null) {
-                projects.remove(projectName);
-                if (projects.isEmpty()) {
-                    userToProjectsMap.remove(userName);
-                }
-            }
-        }
-
-        public ArrayList<String> getAssignedProjectsForUser(String userName) {
-            return userToProjectsMap.getOrDefault(userName, new ArrayList<>());
-        }
-
-        public void printAssignments() {
-            for (Map.Entry<String, ArrayList<String>> entry : userToProjectsMap.entrySet()) {
-                String userName = entry.getKey();
-                ArrayList<String> projects = entry.getValue();
-                System.out.println(userName + " is assigned to projects: " + projects);
+    public void unassignProjectFromUser(User user, Project project) {
+        List<Project> projects = userToProjectsMap.get(user);
+        if (projects != null) {
+            projects.remove(project);
+            if (projects.isEmpty()) {
+                userToProjectsMap.remove(user);
             }
         }
     }
 
+    public List<Project> getAssignedProjectsForUser(User user) {
+        return userToProjectsMap.getOrDefault(user, new ArrayList<>());
+    }
 
+    public List<User> getMembersForProject(Project project) {
+        List<User> members = new ArrayList<>();
+        for (Map.Entry<User, List<Project>> entry : userToProjectsMap.entrySet()) {
+            if (entry.getValue().contains(project)) {
+                members.add(entry.getKey());
+            }
+        }
+        return members;
+    }
+
+    public Map<User, List<Project>> getAllAssignments() {
+        return userToProjectsMap;
+    }
+
+    // Conversion methods
+
+
+}

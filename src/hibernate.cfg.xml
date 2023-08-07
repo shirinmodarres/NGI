@@ -19,13 +19,16 @@
 
         <!-- Optional: Create or update database schema automatically -->
         <property name="hibernate.hbm2ddl.auto">update</property>
-
+        <mapping package="Core.ModelDb" />
         <!-- Optional: Specify entity classes packages -->
-        <mapping class="Core.Model.User"/>
+        <mapping class="Core.ModelDb.ProjectDB"/>
+
+
+
         <mapping class="Core.Model.Board"/>
-        <mapping class="Core.Model.Project"/>
-        <mapping class="Core.Model.Issue"/>
-<mapping class="Core.Model.UserProject"/>
+        <mapping class="Core.ModelDb.UserDB"/>
+        <mapping class="Core.ModelDb.IssueDB"/>
+<!--<mapping class="Core.Model.UserProject"/>-->
 
 
     </session-factory>

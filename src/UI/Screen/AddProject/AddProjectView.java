@@ -1,6 +1,5 @@
 package UI.Screen.AddProject;
 
-import Core.DataBase.UserProjectRepository;
 import Core.Manager.ProjectManager;
 import UI.Component.*;
 
@@ -13,9 +12,9 @@ import java.awt.event.ActionListener;
 public class AddProjectView extends JPanel {
     AddProjectController addProjectController;
 
-    public AddProjectView(UserProjectRepository userProjectRepository ,ProjectManager projectManager, AddProjectViewEventListener addProjectViewEventListener) {
+    public AddProjectView(ProjectManager projectManager, AddProjectViewEventListener addProjectViewEventListener) {
 
-        addProjectController = new AddProjectController(projectManager,userProjectRepository); // Provide userManager to AddMemberController
+        addProjectController = new AddProjectController(projectManager); // Provide userManager to AddMemberController
         //Setting
         setLayout(null);
         setBounds(85, 15, 700, 570);

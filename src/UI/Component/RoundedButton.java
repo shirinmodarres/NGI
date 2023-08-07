@@ -19,8 +19,6 @@ public class RoundedButton extends JButton {
         setFont(new Font("Calibri", Font.PLAIN, 24));
         setBackground(color);
         setBounds(x, y, width, height);
-        setBorder(new EmptyBorder(10, 6, 5, 6));
-
     }
 
     @Override

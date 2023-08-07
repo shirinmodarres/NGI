@@ -1,6 +1,9 @@
 package Core.DataBase;
 
+import Core.Model.Project;
 import Core.Model.User;
+import Core.ModelDb.ProjectDB;
+import Core.ModelDb.UserDB; // Import UserDB instead of User
 import org.hibernate.Criteria;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -12,73 +15,105 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 public class UserDatabase {
-    SessionFactory sessionFactory = new Configuration().configure().buildSessionFactory();
+    private static UserDatabase instance; // Singleton instance
+    private SessionFactory sessionFactory;
 
-
-    public UserDatabase(SessionFactory sessionFactory) {
-        this.sessionFactory = sessionFactory;
+    private UserDatabase() {
+        this.sessionFactory = new Configuration().configure().buildSessionFactory();
+    }
+    private User convertToAppModel(UserDB userDB) {
+        User user = new User();
+        user.setId(userDB.getId());
+        user.setName(userDB.getName());
+        user.setId(userDB.getId());
+        user.setName(userDB.getName());
+        user.setEmail(userDB.getEmail());
+        user.setPassword(userDB.getPassword());
+        user.setRole(userDB.getRole());
+        // Set other properties...
+        return user;
     }
 
 
+
+    private UserDB convertToDbModel(User user) {
+        UserDB userDB = new UserDB();
+        userDB.setId(user.getId());
+        userDB.setName(user.getName());
+        userDB.setEmail(user.getEmail());
+        userDB.setPassword(user.getPassword());
+        userDB.setRole(user.getRole());
+
+        // Set other properties...
+        return userDB;
+    }
+
+
+
+    public static UserDatabase getInstance() {
+        if (instance == null) {
+            instance = new UserDatabase();
+        }
+        return instance;
+    }
+
     public void saveUser(User user) {
+        UserDB userDB=convertToDbModel(user);
         Session session = sessionFactory.openSession();
         Transaction transaction = session.beginTransaction();
-        session.persist(user);
+        session.persist(userDB);
         transaction.commit();
     }
 
     public void updateUser(User updatedUser) {
-        Session session=sessionFactory.openSession();
-        Transaction transaction=session.beginTransaction();
-        session.merge(updatedUser);
+        UserDB userDB = convertToDbModel(updatedUser);
+        Session session = sessionFactory.openSession();
+        Transaction transaction = session.beginTransaction();
+        session.merge(userDB);
         transaction.commit();
     }
 
-//    public void removeUser(int userId) {
-//            Session session = sessionFactory.openSession();
-//            Transaction transaction = null;
-//            try {
-//                transaction = session.beginTransaction();
-//                User user = session.get(User.class, userId);
-//                if (user != null) {
-//                    session.delete(user);
-//                }
-//                transaction.commit();
-//            } catch (Exception e) {
-//                if (transaction != null) {
-//                    transaction.rollback();
-//                }
-//                e.printStackTrace();
-//            } finally {
-//                session.close();
-//            }
-//        }
-
-
-    public ArrayList<User> getAllUsers() {
-     Session session = sessionFactory.openSession();
-            List users = session.createQuery("FROM User").list();
-            return new ArrayList<>(users);
-        }
-    public User findUserByEmail(String email) {
+    public void removeUser(User user) {
+        UserDB userDB = convertToDbModel(user);
         Session session = sessionFactory.openSession();
-        Criteria criteria = session.createCriteria(User.class);
-        criteria.add(Restrictions.eq("email", email));
+        session.beginTransaction();
 
-        return (User) criteria.uniqueResult();
+        // Soft delete by updating the isDeleted flag
+        userDB.setDeleted(false);
+        session.update(userDB);
+
+        session.getTransaction().commit();
     }
 
+    public List<User> getAllUsers() {
+        Session session = sessionFactory.openSession();
+        Criteria criteria = session.createCriteria(UserDB.class);
+        criteria.add(Restrictions.eq("isDeleted", false));
 
+        List<UserDB> userDBList = criteria.list();
 
+        List<User> userList = new ArrayList<>();
+        for (UserDB userDB : userDBList) {
+            User user = convertToAppModel(userDB);
+            userList.add(user);
+        }
 
+        return userList;
+    }
+
+    public User findUserByEmail(String email) {
+        Session session = sessionFactory.openSession();
+        Criteria criteria = session.createCriteria(UserDB.class);
+        criteria.add(Restrictions.eq("email", email));
+
+        UserDB userDB = (UserDB) criteria.uniqueResult();
+        if (userDB != null) {
+            return convertToAppModel(userDB);
+        }
+
+        return null;
+    }
 }
-
-
-
-
-
-

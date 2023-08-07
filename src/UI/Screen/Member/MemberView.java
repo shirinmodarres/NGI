@@ -1,26 +1,30 @@
 package UI.Screen.Member;
 
+import Core.DataBase.UserDatabase;
 import Core.Manager.UserManager;
 import Core.Model.User;
 import UI.Component.*;
+import UI.Screen.EditMember.EditMemberView;
 //import UI.Screen.EditMember.EditMemberView;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 
+import static UI.Component.Colors.getRandomColor;
+
 public class MemberView extends JPanel {
     private final Font textFont = new Font("Calibri", Font.PLAIN, 18);
     private final Font subTextFont = new Font("Calibri", Font.PLAIN, 14);
-    private final Font titleFont = new Font("Calibri", Font.PLAIN, 32);
     RoundedBorder border = new RoundedBorder(new Color(147, 191, 207), 6, 3);
-    private MemberController memberController;
+    private final MemberController memberController;
     JPanel memberPanel = new JPanel();
-
+    EditMemberView editMemberView;
 
     public MemberView(UserManager userManager, ActionListener addMemberEvent) {
 
-        memberController = new MemberController(userManager); // Provide userManager to AddMemberController
+        // Provide userManager to AddMemberController
+        memberController = new MemberController(userManager);
 
         //Setting
         setVisible(false);
@@ -30,6 +34,7 @@ public class MemberView extends JPanel {
         setVisible(true);
 
         //Header
+        Font titleFont = new Font("Calibri", Font.PLAIN, 32);
         CustomLabel title = new CustomLabel("Members", titleFont, 20, 32, 390, 40);
         add(title);
         ImageButton searchMemberIcon = new ImageButton("img/search-member.png", 500, 32, 44, 44);
@@ -51,13 +56,13 @@ public class MemberView extends JPanel {
 
         //Add members card
         JPanel addMemberPlace = createAddMemberPanel(addMemberEvent);
-
-        pageIsEmpty(userManager);
-
         add(addMemberPlace);
+
+generateMemberPlacePanels();
+
     }
 
-    public void pageIsEmpty(UserManager userManager) {
+    public void pageIsEmpty() {
         memberPanel.setLayout(null);
         JScrollPane memberScrollPane = new JScrollPane(memberPanel);
         memberScrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
@@ -91,14 +96,34 @@ public class MemberView extends JPanel {
             System.out.println("User not found.");
         }
     }
+    private User getUserFromMemberPlace(JPanel memberPlace) {
+        // Extract the user information from the memberPlace panel
+        Component[] components = memberPlace.getComponents();
+        for (Component component : components) {
+            if (component instanceof CustomLabel) {
+                CustomLabel nameLabel = (CustomLabel) component;
+                String userName = nameLabel.getText();
+                return memberController.getUserManager().findUserByName(userName);
+            }
+        }
+        return null;
+    }
 
-    private void generateMemberPlacePanels() {
+    private void removeUser(User user) {
+        memberController.getUserManager().removeUser(user);
+        generateMemberPlacePanels();// Call the removeUser method in your manager
+        revalidate();
+        repaint();
+    }
+
+    public void generateMemberPlacePanels() {
         int x = 20;
         int y = 103;
         int padding = 20;
         int containerWidth = 700;
         int currentX = x;
         int currentY = y;
+
 
         //Generate Membership card
         for (User user : memberController.getUserManager().getUserDatabase().getAllUsers()) {
@@ -113,13 +138,60 @@ public class MemberView extends JPanel {
             memberPlace.setLayout(null);
             memberPlace.setBackground(new Color(255, 255, 255, 60));
             memberPlace.setBounds(currentX, currentY, 175, 212);
+//            memberPlace.addMouseListener(infoEvent);
             add(memberPlace);
 
+            ImageButton removeBtn = new ImageButton("img/remove.png", 20, 10, 25, 25);
+            removeBtn.addActionListener(e -> {
+                int dialogResult = JOptionPane.showConfirmDialog(
+                        this,
+                        "Are you sure you want to remove this user?",
+                        "Confirm Removal",
+                        JOptionPane.YES_NO_OPTION
+                );
+
+                if (dialogResult == JOptionPane.YES_OPTION) {
+                    JPanel memberselectedPlace = (JPanel) removeBtn.getParent();
+                    User userToRemove = getUserFromMemberPlace(memberselectedPlace);
+
+                        removeUser(userToRemove);
+                        memberPanel.remove(memberselectedPlace);
+
+                }
+            });
+            memberPlace.add(removeBtn);
+
+
             ImageButton editBtn = new ImageButton("img/edit.png", 140, 10, 25, 25);
-//            editBtn.addActionListener(editMemberEvent);
+            editBtn.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    System.out.println("balash");
+                     editMemberView = new EditMemberView(UserManager.getInstance(UserDatabase.getInstance()), new EditMemberView.EditMemberViewEventListener() {
+
+                         @Override
+                        public void PageClosed() {
+                            editMemberView.setVisible(false);
+                            editBtn.getParent().setVisible(true);
+                        }
+
+                    });
+                    System.out.println("ziresh");
+//                    editMemberView.setVisible(true);
+//                    setVisible(false);
+
+                    add(editMemberView,0);
+                    revalidate();
+                    repaint();
+
+
+                }
+
+            });
             memberPlace.add(editBtn);
 
-            Circle circle = new Circle(Color.BLACK, 40, 105, 55, 55);
+            Color color = getRandomColor();
+            Circle circle = new Circle(color, 65, 40, 50, 50);
             memberPlace.add(circle);
 
             CustomLabel name = new CustomLabel(user.getName(), textFont, 40, 105, 100, 25);
@@ -129,12 +201,7 @@ public class MemberView extends JPanel {
             CustomLabel position = new CustomLabel(user.getRole().toString(), subTextFont, 40, 135, 100, 25);
             position.setHorizontalAlignment(JLabel.CENTER);
             memberPlace.add(position);
-            memberPlace.addMouseListener(new MouseAdapter() {
-                @Override
-                public void mousePressed(MouseEvent e) {
-                    System.out.println(user);
-                }
-            });
+//            memberPlace.addMouseListener(infoEvent);
         }
 
         // Update the preferred size of MemberView based on the number of members

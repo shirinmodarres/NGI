@@ -1,4 +1,4 @@
-package UI.Screen.Board;
+package UI.Screen.BoardPanel;
 
 import Core.Manager.BoardManager;
 import Core.Model.Board;
@@ -6,10 +6,10 @@ import Core.Model.Board;
 import java.util.Date;
 import java.util.List;
 
-public class BoardController {
+public class BoardPanelController {
     private BoardManager boardManager;
 
-    public BoardController(BoardManager boardManager) {
+    public BoardPanelController(BoardManager boardManager) {
         this.boardManager = boardManager;
     }
 

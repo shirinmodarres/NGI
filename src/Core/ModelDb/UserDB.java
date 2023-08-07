@@ -1,25 +1,35 @@
-package Core.Model;
+package Core.ModelDb;
+
+import Core.Model.Role;
 
 import javax.persistence.*;
-import java.util.Locale;
 
+@Entity
+@Table(name = "userDB")
+public class UserDB {
 
-public class User {
-
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private int id;
 
+    @Column(name = "name")
     private String name;
 
+    @Column(name = "email", unique = true, columnDefinition = "VARCHAR(255) COLLATE utf8_bin")
     private String email;
+    @Column(name = "password")
     private String password;
+    @Column(name = "role_id")
     private Role role;
+    @Column(name = "is_deleted")
     private boolean isDeleted;
 
-    public User(){
+    public UserDB() {
 
     }
 
-    public User(String nickname, String email, String password, Role roll) {
+    public UserDB(String nickname, String email, String password, Role roll) {
         this.name = nickname;
         this.email = email.toLowerCase();
         this.password = password;
@@ -87,3 +97,5 @@ public class User {
                 '}';
     }
 }
+
+

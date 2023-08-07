@@ -7,23 +7,25 @@ import Core.Model.Project;
 import java.util.ArrayList;
 
 public class IssueManager {
-    static  private ArrayList<Issue> issues;
-    IssueDatabase issueDatabase=IssueDatabase.getInstance();
+    private static IssueManager instance; // Singleton instance
+    private IssueDatabase issueDatabase;
+    private ArrayList<Issue> issues;
 
-public IssueManager (IssueDatabase issueDatabase){
-    this.issueDatabase=issueDatabase;
-    this.issues=new ArrayList<>();
-
+    private IssueManager() {
+        this.issueDatabase = IssueDatabase.getInstance(); // Utilize the existing singleton instance
+        this.issues = new ArrayList<>();
     }
-    public IssueManager() {
-        issueDatabase = IssueDatabase.getInstance();
+
+    public static IssueManager getInstance() {
+        if (instance == null) {
+            instance = new IssueManager();
+        }
+        return instance;
     }
 
     public ArrayList<Issue> getAllIssues() {
         return issueDatabase.getAllIssues();
     }
-
-
 
     public void addIssue(Issue issue) {
         issueDatabase.addIssue(issue);
@@ -45,8 +47,4 @@ public IssueManager (IssueDatabase issueDatabase){
         }
         return null;
     }
-
 }
-
-
-

@@ -2,27 +2,33 @@ package UI.Screen.EditMember;
 
 import Core.Manager.UserManager;
 import Core.Model.Role;
+import Core.Model.User;
 import UI.Component.CustomLabel;
 import UI.Component.CustomTextField;
 import UI.Component.DropdownField;
 import UI.Component.RoundedButton;
+import UI.Screen.Member.MemberView;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.ArrayList;
 
 public class EditMemberView extends JPanel {
     EditMemberController editMemberController;
-    public EditMemberView(UserManager userManager){
-        editMemberController =new EditMemberController(userManager);
 
+    public EditMemberView(UserManager userManager, EditMemberViewEventListener editMemberViewEventListener) {
+        editMemberController = new EditMemberController(userManager);
+        //setting
+        setVisible(true);
         setLayout(null);
-        setBounds(85, 15, 700, 570);
-        setBackground(new Color(251, 246, 230));
+        setBounds(0, 0, 700, 570);
+        setBackground(new Color(251, 0, 0));
 
         Font titleFont = new Font("Calibri", Font.PLAIN, 32);
         CustomLabel title = new CustomLabel("Edit Members", titleFont, 20, 32, 390, 40);
-
+        title.setText(title.getText());
         Font font = new Font("Calibri", Font.PLAIN, 20);
         CustomLabel name = new CustomLabel("Name:", font, 25, 80, 110, 23);
         CustomTextField nameField = new CustomTextField("Write Your Name", 20, 103, 260, 40);
@@ -49,50 +55,39 @@ public class EditMemberView extends JPanel {
 
         add(title);
         RoundedButton saveBtn = new RoundedButton("Save", 400, 510, 100, 40, new Color(96, 150, 180));
-//        saveBtn.addActionListener(new ActionListener() {
-//            @Override
-//            public void actionPerformed(ActionEvent e) {
-//                // Extract data from input fields
-//                String name = nameField.getText();
-//                String email = emailField.getText();
-//                String password = passwordField.getText();
-//                String selectedRole = (String) roleDropDown.getSelectedItem();
-//                Role role = Role.valueOf(selectedRole.toUpperCase());
-//
-//                // Call the controller method to add the user
-//                editMemberController.editUser(name, email, password,role);
-//                nameField.setText("");
-//                emailField.setText("");
-//                passwordField.setText("");
-//                roleDropDown.setSelectedIndex(0); // Assuming the first item is a default selection
-//                MemberView memberView=new MemberView(userManager);
-//                Container parent = getParent();
-//                parent.remove(EditMemberView.this); // Remove the current panel (AddMemberView)
-//                parent.add(memberView); // Add the member view panel
-//                parent.revalidate(); // Revalidate the container to update the UI
-//                parent.repaint(); // Repaint the container to refresh the UI
-//
-//            }
-//        });
+        saveBtn.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                // Extract data from input fields
+                String name = nameField.getText();
+                String email = emailField.getText();
+                String password = passwordField.getText();
+                String selectedRole = (String) roleDropDown.getSelectedItem();
+                Role role = Role.valueOf(selectedRole.toUpperCase());
+
+                // Call the controller method to add the user
+                editMemberController.editUser(name, email, password, role);
+                nameField.setText("");
+                emailField.setText("");
+                passwordField.setText("");
+                roleDropDown.setSelectedIndex(0); // Assuming the first item is a default selection
+                editMemberViewEventListener.PageClosed();
+            }
+        });
 
 
         RoundedButton cancelBtn = new RoundedButton("Cancel", 515, 510, 100, 40, new Color(214, 64, 69));
 
-//        cancelBtn.addActionListener(new ActionListener() {
-//            @Override
-//            public void actionPerformed(ActionEvent e) {
-//                nameField.setText("");
-//                emailField.setText("");
-//                passwordField.setText("");
-//                roleDropDown.setSelectedIndex(0); // Assuming the first item is a default selection
-//                MemberView memberView=new MemberView(userManager);
-//                Container parent = getParent();
-//                parent.remove(EditMemberView.this); // Remove the current panel (AddMemberView)
-//                parent.add(memberView); // Add the member view panel
-////                parent.revalidate(); // Revalidate the container to update the UI
-////                parent.repaint(); // Repaint the container to refresh the UI
-//            }
-//        });
+        cancelBtn.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                nameField.setText("");
+                emailField.setText("");
+                passwordField.setText("");
+                roleDropDown.setSelectedIndex(0); // Assuming the first item is a default selection
+                editMemberViewEventListener.PageClosed();
+            }
+        });
 
         add(title);
         add(email);
@@ -106,7 +101,12 @@ public class EditMemberView extends JPanel {
         add(project);
         add(saveBtn);
         add(cancelBtn);
-        setVisible(false);
+
+    }
+
+    public interface EditMemberViewEventListener {
+        void PageClosed();
+
     }
 
 }

@@ -1,8 +1,7 @@
 package Core.DataBase;
 
 import Core.Model.Project;
-import Core.Model.User;
-import Core.Model.UserProject;
+import Core.ModelDb.ProjectDB;
 import org.hibernate.Criteria;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -14,62 +13,68 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ProjectDatabase {
-    SessionFactory sessionFactory = new Configuration().configure().buildSessionFactory();
+    private SessionFactory sessionFactory;
 
     public ProjectDatabase(SessionFactory sessionFactory) {
-        this.sessionFactory = sessionFactory;
+        this.sessionFactory = new Configuration().configure().buildSessionFactory();
     }
 
+    private ProjectDB convertToDbModel(Project project) {
+        ProjectDB projectDB = new ProjectDB();
+        projectDB.setId(project.getId());
+        projectDB.setTitle(project.getTitle());
+        projectDB.setDescription(project.getDescription());
+        return projectDB;
+    }
+
+    private Project convertToAppModel(ProjectDB projectDB) {
+        Project project = new Project();
+        project.setId(projectDB.getId());
+        project.setTitle(projectDB.getTitle());
+        project.setDescription(projectDB.getDescription());
+        return project;
+    }
     public void saveProject(Project project) {
         Session session = sessionFactory.openSession();
         Transaction transaction = session.beginTransaction();
-        session.persist(project);
+        ProjectDB projectDB = convertToDbModel(project);
+        session.persist(projectDB);
         transaction.commit();
     }
 
-    public void updateProject(Project updatedProject) {
+    public void updateProject(Project project) {
         Session session = sessionFactory.openSession();
         Transaction transaction = session.beginTransaction();
-        session.merge(updatedProject);
+        ProjectDB projectDB = convertToDbModel(project);
+        session.merge(projectDB);
         transaction.commit();
     }
 
-//    public void removeProject(String projectTitle) {
-//        // Remove the project from the list or database based on the title
-//        projects.removeIf(project -> project.getTitle().equals(projectTitle));
-//    }
-
-    public ArrayList<Project> getAllProject() {
+    public List<Project> getAllProjects() {
         Session session = sessionFactory.openSession();
-        List projects = session.createQuery("FROM Project").list();
-        return new ArrayList<>(projects);
+        Criteria criteria = session.createCriteria(ProjectDB.class);
+        List<ProjectDB> projectDBList = criteria.list();
+        List<Project> projectList = new ArrayList<>(projectDBList.size()); // Initialize with the expected size
+        for (ProjectDB projectDB : projectDBList) {
+            Project project = convertToAppModel(projectDB);
+            projectList.add(project);
+        }
+        return projectList;
     }
 
 
-    public Project getProjectByTitle(String projectTitle) {
+
+    public ProjectDB getProjectByTitle(String projectTitle) {
         Session session = sessionFactory.openSession();
-        Criteria criteria = session.createCriteria(Project.class);
+        Criteria criteria = session.createCriteria(ProjectDB.class);
         criteria.add(Restrictions.eq("title", projectTitle));
-        return (Project) criteria.uniqueResult();
-
+        return (ProjectDB) criteria.uniqueResult();
     }
 
-    public List<Project> findProjectsByTitle(String searchTitle) {
-        // Find projects that match the searchTitle
+    public List<ProjectDB> findProjectsByTitle(String searchTitle) {
         Session session = sessionFactory.openSession();
-        Criteria criteria = session.createCriteria(Project.class);
+        Criteria criteria = session.createCriteria(ProjectDB.class);
         criteria.add(Restrictions.like("title", "%" + searchTitle + "%"));
         return criteria.list();
-
-    }
-    public void assignProjectToUser(User user, Project project) {
-        Session session = sessionFactory.openSession();
-        Transaction transaction = session.beginTransaction();
-
-        UserProject userProject = new UserProject(user, project);
-        session.persist(userProject);
-
-        transaction.commit();
-
     }
 }

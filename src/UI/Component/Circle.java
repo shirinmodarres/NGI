@@ -13,9 +13,8 @@ public class Circle extends JPanel {
         this.circleY = y;
         this.circleWidth = width;
         this.circleHeight = height;
-        setVisible(true);
-        setBounds(x,y,width,height);
-        setBackground(new Color(0,0,0,0));
+        setOpaque(false); // Make the panel transparent
+        setBounds(x, y, width, height);
     }
 
     @Override
@@ -23,12 +22,11 @@ public class Circle extends JPanel {
         super.paintComponent(g);
 
         g.setColor(circleColor);
-        g.drawOval(40, 105, 55, 55);
+        g.fillOval(0, 0, circleWidth, circleHeight);
     }
 
-//    @Override
-//    public Dimension getPreferredSize() {
-//        return new Dimension(400, 400);
-//    }
-
+    @Override
+    public Dimension getPreferredSize() {
+        return new Dimension(circleWidth, circleHeight);
+    }
 }

@@ -85,11 +85,13 @@ public class LoginView extends JPanel {
 
 
     public User performLogin(LoginController loginController) {
-        String email = emailField.getText();
-        String password = passwordField.getText();
+//        String email = emailField.getText();
+//        String password = passwordField.getText();
+        String email = "shirinmodarres24@gmail.com";
+        String password = "shirin44";
 
-        boolean isPasswordValid = Pattern.matches("^[a-z0-9]{8}$", password);
-        boolean isEmailValid = Pattern.matches("^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$", email);
+        boolean isPasswordValid = Pattern.matches("^(?=.*[A-Za-z])(?=.*\\d).{8,}$", password);
+        boolean isEmailValid = Pattern.matches("^^[A-Za-z0-9+_.-]+@([A-Za-z0-9.-]+\\.)+[A-Za-z]{2,}$", email);
 
 
         if (isEmailValid) {

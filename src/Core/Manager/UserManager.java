@@ -8,12 +8,20 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class UserManager {
-    static private ArrayList<User> users;
-    UserDatabase userDatabase ;
+    private static UserManager instance; // Singleton instance
+    private ArrayList<User> users;
+    private UserDatabase userDatabase;
 
-    public UserManager(UserDatabase userDatabase) {
+    private UserManager(UserDatabase userDatabase) {
         this.users = new ArrayList<>();
         this.userDatabase = userDatabase;
+    }
+
+    public static UserManager getInstance(UserDatabase userDatabase) {
+        if (instance == null) {
+            instance = new UserManager(userDatabase);
+        }
+        return instance;
     }
 
     public ArrayList<User> addUser(String nickname, String email, String password, Role role) {
@@ -78,7 +86,12 @@ public class UserManager {
 
         return null; // Invalid user
     }
-    public UserDatabase getUserDatabase() {
+    public void removeUser(User user) {
+        userDatabase.removeUser(user);
+    }
+
+
+public UserDatabase getUserDatabase() {
         return userDatabase;
     }
 }

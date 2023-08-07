@@ -1,31 +1,31 @@
 package UI.Screen.AddMember;
 
+import Core.Manager.ProjectManager;
 import Core.Manager.UserManager;
+import Core.Model.Project;
 import Core.Model.Role;
-import UI.Component.CustomTextField;
-import UI.Component.CustomLabel;
-import UI.Component.DropdownField;
-import UI.Component.RoundedButton;
-import UI.Screen.AddProject.AddProjectView;
+import UI.Component.*;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.util.ArrayList;
 
 public class AddMemberView extends JPanel {
 
     AddMemberController addMemberController;
 
-    public AddMemberView(UserManager userManager, AddMemberViewEventListener addMemberViewEventListener) {
+    public AddMemberView(UserManager userManager, ProjectManager projectManager, AddMemberViewEventListener addMemberViewEventListener, ProjectSelectedListener projectSelectedListener) {
 
         addMemberController = new AddMemberController(userManager); // Provide userManager to AddMemberController
         //Setting
         setLayout(null);
         setBounds(85, 15, 700, 570);
         setBackground(new Color(251, 246, 230));
-        setVisible(true);
+        setVisible(false);
 
         Font titleFont = new Font("Calibri", Font.PLAIN, 32);
         CustomLabel title = new CustomLabel("Add Members", titleFont, 20, 32, 390, 40);
@@ -67,6 +67,52 @@ public class AddMemberView extends JPanel {
         CustomLabel project = new CustomLabel("Project:", font, 25, 240, 110, 23);
         add(project);
 
+        JPanel contentPanel = new JPanel();
+        contentPanel.setVisible(true);
+//        contentPanel.setBackground(Color.DARK_GRAY);
+        contentPanel.setBounds(25, 260, 600, 200);
+        contentPanel.setBorder(new RoundedBorder(Color.BLUE, 4, 4));
+        contentPanel.setLayout(new BoxLayout(contentPanel, BoxLayout.X_AXIS));
+//        for (Project p : projectManager.getProjectDatabase().getAllProjects()) {
+//            JLabel projectLabel = new JLabel(p.getTitle());
+//            projectLabel.addMouseListener(new MouseListener() {
+//                @Override
+//                public void mouseClicked(MouseEvent e) {
+//                    if (e.getClickCount() == 2) { // Check for double-click
+//                        projectSelectedListener.onProjectSelected(p);
+//                    }
+//                }
+//
+//                @Override
+//                public void mousePressed(MouseEvent e) {
+//
+//                }
+//
+//                @Override
+//                public void mouseReleased(MouseEvent e) {
+//
+//                }
+//
+//                @Override
+//                public void mouseEntered(MouseEvent e) {
+//
+//                }
+//
+//                @Override
+//                public void mouseExited(MouseEvent e) {
+//
+//                }
+//            });
+//            contentPanel.add(projectLabel);
+//        }
+
+
+        add(contentPanel);
+//        JScrollPane scrollPane = new JScrollPane(contentPanel);
+//        scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
+//        add(scrollPane);
+
+
         RoundedButton saveBtn = new RoundedButton("Save", 400, 510, 100, 40, new Color(96, 150, 180));
         saveBtn.addActionListener(new ActionListener() {
             @Override
@@ -106,7 +152,50 @@ public class AddMemberView extends JPanel {
         add(cancelBtn);
 
     }
+
     public interface AddMemberViewEventListener {
         void onPageClosed();
+
     }
+
+    public interface ProjectSelectedListener {
+        void onProjectSelected(Project project);
+    }
+
+    private class CirclePanel extends JPanel {
+
+        private String projectName;
+
+        public CirclePanel(String projectName) {
+            this.projectName = projectName;
+            setPreferredSize(new Dimension(50, 50));
+
+        }
+
+        @Override
+        protected void paintComponent(Graphics g) {
+            super.paintComponent(g);
+            drawCircle(g);
+        }
+
+        private void drawCircle(Graphics g) {
+            int radius = 25;
+            int centerX = getWidth() / 2;
+            int centerY = getHeight() / 2;
+
+            g.setColor(Color.RED);
+            g.drawOval(centerX - radius, centerY - radius, radius * 2, radius * 2);
+
+            g.setColor(Color.BLACK);
+            g.drawString(projectName, centerX - radius, centerY);
+        }
+
+        @Override
+        public Dimension getPreferredSize() {
+            return new Dimension(50, 50); // Adjust as needed
+        }
+    }
+
+
 }
+

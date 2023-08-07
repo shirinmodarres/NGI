@@ -1,13 +1,41 @@
-package Core.Model;
+package Core.ModelDb;
 
 import javax.persistence.*;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 
-public class Project {
 
+@Entity
+@Table(name = "projectDB")
+public class ProjectDB {
+
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "project-id")
     private int id;
 
+    @Column(name = "title")
+    private String title;
+    @Lob
+    @Column(name = "description")
+    private String description;
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name = "date")
+    private Date createDate;
+
+    public ProjectDB() {
+
+    }
+
+    public ProjectDB(String title, String description) {
+
+        this.title = title;
+        this.description = description;
+        this.createDate = new Date();
+
+    }
     public int getId() {
         return id;
     }
@@ -15,24 +43,6 @@ public class Project {
     public void setId(int id) {
         this.id = id;
     }
-
-    private String title;
-
-    private String description;
-
-    private Date createDate;
-
-    public Project() {
-
-    }
-
-    public Project(String title, String description) {
-        this.createDate = new Date();
-        this.title = title;
-        this.description = description;
-
-    }
-
     public String getFormattedDate() {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy MMM dd"); // Format the date as "YYYY-MM-DD"
         return sdf.format(createDate);
@@ -54,3 +64,5 @@ public class Project {
         this.description = description;
     }
 }
+
+

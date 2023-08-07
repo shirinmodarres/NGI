@@ -3,10 +3,8 @@ package UI.Screen;
 import Core.Manager.BoardManager;
 import UI.Screen.AddBoard.AddBoardView;
 //import UI.Screen.EditMember.EditMemberView;
-import UI.Screen.Board.BoardController;
-import UI.Screen.Board.BoardView;
-import UI.Screen.LogIn.LoginController;
-import UI.Screen.LogIn.LoginView;
+import UI.Screen.BoardPanel.BoardPanelController;
+import UI.Screen.BoardPanel.BoardPanelView;
 
 import javax.swing.*;
 import java.awt.*;
@@ -25,8 +23,8 @@ public class MainFrame extends JFrame {
         MainPanelView mainPanelView=new MainPanelView();
 
         BoardManager boardManager=new BoardManager();
-        BoardController boardController=new BoardController(boardManager);
-        BoardView boardView=new BoardView(boardManager);
+        BoardPanelController boardPanelController =new BoardPanelController(boardManager);
+//        BoardPanelView boardPanelView =new BoardPanelView(boardManager);
         AddBoardView addBoardView=new AddBoardView(boardManager);
 
 

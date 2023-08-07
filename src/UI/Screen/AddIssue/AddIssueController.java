@@ -14,7 +14,7 @@ public class AddIssueController {
     private IssueManager issueManager;
 
     public AddIssueController() {
-        this.issueManager = new IssueManager();
+        this.issueManager = IssueManager.getInstance();
     }
 
     public Issue addIssue(String title, String description, Status status,

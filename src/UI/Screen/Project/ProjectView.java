@@ -17,49 +17,41 @@ public class ProjectView extends JPanel {
 
     ProjectController projectController;
     JPanel projectPanel = new JPanel();
+    ProjectViewEventListener projectViewEventListener; // Listener for project click event
 
     public ProjectView(ProjectManager projectManager, ActionListener addEvent, ProjectViewEventListener projectViewEventListener) {
-
-        projectController = new ProjectController(projectManager); // Provide userManager to AddMemberController
+        this.projectViewEventListener = projectViewEventListener;
+        projectController = new ProjectController(projectManager);
         setLayout(null);
         setVisible(false);
         setBounds(85, 15, 700, 570);
         setBackground(new Color(251, 246, 230));
+
         CustomLabel title = new CustomLabel("Projects", titleFont, 20, 32, 390, 40);
         ImageButton searchProjectIcon = new ImageButton("img/search.png", 500, 32, 44, 44);
         CustomTextField searchField = new CustomTextField("Search..", 554, 44, 130, 30);
+
         searchProjectIcon.addKeyListener(new KeyAdapter() {
             @Override
             public void keyPressed(KeyEvent e) {
                 if (e.getKeyCode() == KeyEvent.VK_ENTER) {
-                    String searchText = searchProjectIcon.getText().trim();
+                    String searchText = searchField.getText().trim();
                     if (!searchText.isEmpty()) {
                         projectController.findProjectByTitle(searchText);
                     }
                 }
             }
         });
+
         JPanel addProjectPlace = createAddProjectPanel(addEvent);
-        pageIsEmpty(projectManager);
+        generateProjectPlacePanels();
 
         add(addProjectPlace);
-
         add(searchField);
         add(title);
         add(searchProjectIcon);
+
         setVisible(true);
-    }
-
-    public void pageIsEmpty(ProjectManager projectManager) {
-        projectPanel.setLayout(null);
-        JScrollPane projectScrollPane = new JScrollPane(projectPanel);
-        projectScrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
-        projectScrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
-        add(projectScrollPane);
-
-        generateProjectPlacePanels( );
-
-
     }
 
     private JPanel createAddProjectPanel(ActionListener addEvent) {
@@ -80,15 +72,13 @@ public class ProjectView extends JPanel {
     public void generateProjectPlacePanels() {
         int x = 20;
         int y = 103;
-
         int padding = 70;
         int containerWidth = 700;
         int currentX = x;
         int currentY = y;
         Color color = getRandomColor();
 
-
-        for (Project project : projectController.getProjectManager().getProjectDatabase().getAllProject()) {
+        for (Project project : projectController.getProjectManager().getAllProjects()) {
             currentX += 260 + padding;
             if (currentX + 260 + padding > containerWidth) {
                 currentX = x;
@@ -100,40 +90,35 @@ public class ProjectView extends JPanel {
             projectPlace.setLayout(null);
             projectPlace.setBackground(new Color(color.getRed(), color.getGreen(), color.getBlue(), 60));
             projectPlace.setBounds(currentX, currentY, 260, 215);
-//            projectPlace.addMouseListener(new MouseAdapter() {
-//                @Override
-//                public void mousePressed(MouseEvent e) {
-//
-////                    ProjectInfoView projectInfoViwer = new ProjectInfoView(project);
-//                    projectViewEventListener.onProjectClick();
-//
-//
-//                }
-//
-//            });
+            projectPlace.addMouseListener(new MouseAdapter() {
+                @Override
+                public void mouseClicked(MouseEvent e) {
+                    if (e.getClickCount() == 1) { // Check for single-click
+                        if (projectViewEventListener != null) {
+                            projectViewEventListener.onProjectClick(project);
+                            System.out.println(project.getTitle());
+
+                        }
+                    }
+                }
+            });
+
             CustomLabel date = new CustomLabel(project.getFormattedDate().toString(), subTextFont, 15, 15, 100, 25);
-            Circle circle = new Circle(Color.BLACK, 70, 50, 55, 55);
             CustomLabel title = new CustomLabel(project.getTitle(), textFont, 80, 50, 110, 25);
             title.setHorizontalAlignment(JLabel.CENTER);
 
-
-            projectPlace.add(circle);
             projectPlace.add(title);
             projectPlace.add(date);
 
-            add(projectPlace); // Add each memberPlace directly to the MemberView
-
+            add(projectPlace);
         }
 
-        // Update the preferred size of MemberView based on the number of members
         int rowCount = (projectController.getProjectManager().getAllProjects().size() + 2) / 3;
         int totalHeight = rowCount * (212 + padding) + y;
         setPreferredSize(new Dimension(containerWidth, totalHeight));
     }
 
-
     public interface ProjectViewEventListener {
-        void onProjectClick();
+        void onProjectClick(Project project);
     }
-
 }
